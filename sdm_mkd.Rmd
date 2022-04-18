@@ -44,7 +44,7 @@ library(plotly)
 library(xtable)
 library(tidyr)
 ```
-#*Step1-Data preparation
+#Step1-Data preparation
 
 *Load study area and creating spatial grids for study area*
 ```{r Loading study area shapefile, echo = TRUE}
@@ -113,4 +113,100 @@ kable(
             ),
   caption = "Bioclimatic variables are derived from the monthly temperature and rainfall values in order to generate more biologically meaningful variables. These are often used in species distribution modeling and related ecological modeling techniques. The bioclimatic variables represent annual trends (e.g., mean annual temperature, annual precipitation) seasonality (e.g., annual range in temperature and precipitation) and extreme or limiting environmental factors (e.g., temperature of the coldest and warmest month, and precipitation of the wet and dry quarters). A quarter is a period of three months (1/4 of the year)."#, booktabs = TRUE
 )
+```
+
+*Converting the climate rasters and shapefile to same projection for extraction*
+```{r Defining projections, echo = TRUE}
+proj.coord <- CRS("+proj=longlat +ellps=WGS84 + datum=WGS84")  # geographical, datum WGS84
+SA_grid <- spTransform(SA_grid, proj.coord)  # projectind the study area grid
+proj4string(clim_rasters) <- SA_grid  # and of climatic rasters
+```
+
+#Here for the species panthera the  bioclimate variable 1,2,3,4,8,12,15,18 are considered as the predictor variables
+*Extraction of predictor variable for each cell of the grid*
+```{r Variable extraction 1, echo = TRUE}
+expl_var<-data.frame(bio_1=numeric(length(SA_grid)),bio_2=numeric(length(SA_grid)),bio_3=numeric(length(SA_grid)),
+                     bio_4=numeric(length(SA_grid)),bio_8=numeric(length(SA_grid)),bio_12=numeric(length(SA_grid)),
+                     bio_15=numeric(length(SA_grid)),bio_18=numeric(length(SA_grid)))
+expl_var
+
+#extr_1 is a list of cells that contains all each cell for each predictor
+extr_1<-raster::extract(clim_rasters$bio1,SA_grid)
+extr_2 <- raster::extract(clim_rasters$bio2,SA_grid)
+extr_3 <- raster::extract(clim_rasters$bio3,SA_grid)
+extr_4 <- raster::extract(clim_rasters$bio4,SA_grid)
+extr_8 <- raster::extract(clim_rasters$bio8,SA_grid)
+extr_12 <- raster::extract(clim_rasters$bio12,SA_grid)
+extr_15 <- raster::extract(clim_rasters$bio15,SA_grid)
+extr_18 <- raster::extract(clim_rasters$bio18,SA_grid)
+
+expl_var$bio_1<-unlist(lapply(extr_1,function(x) 
+                                if(!is.null(x)) 
+                                  mean(x,na.rm=TRUE)
+                                else NA))
+expl_var$bio_2<-unlist(lapply(extr_2,function(x) 
+                         if(!is.null(x)) 
+                           mean(x,na.rm=TRUE)
+                         else NA))  
+expl_var$bio_3<-unlist(lapply(extr_3,function(x) 
+                         if(!is.null(x)) 
+                           mean(x,na.rm=TRUE)
+                         else NA))
+expl_var$bio_4<-unlist(lapply(extr_4,function(x) 
+                         if(!is.null(x)) 
+                           mean(x,na.rm=TRUE)
+                         else NA))
+expl_var$bio_8<-unlist(lapply(extr_8,function(x) 
+                         if(!is.null(x)) 
+                           mean(x,na.rm=TRUE)
+                         else NA))
+expl_var$bio_12<-unlist(lapply(extr_12,function(x) 
+                         if(!is.null(x)) 
+                           mean(x,na.rm=TRUE)
+                         else NA))
+expl_var$bio_15<-unlist(lapply(extr_15,function(x) 
+                          if(!is.null(x)) 
+                            mean(x,na.rm=TRUE)
+                          else NA))
+expl_var$bio_18<-unlist(lapply(extr_18,function(x) 
+                          if(!is.null(x)) 
+                            mean(x,na.rm=TRUE)
+                          else NA))
+write.table(expl_var,"D:/EAGLE/MB2/SDM/SDM_MB2/data/matrices/Environ_var_exracted.txt")
+head(expl_var)
+
+``` 
+## Importing species data
+### Using expert drawn maps
+
+Here the species distribution information is acquired from the IUCN Red List for Threatened Species database. These expert drawn maps acquired by multiple method:only on occurence data(e.g. polygon around known occurence)
+
+One way of acquiring species distribution information is from expert-drawn maps, such as the ones from the IUCN Red List for Threatened Species database. These maps Tare usually done used multiple methods: only on occurrence data (e.g. a polygon around known occurrences), whereas others incorporate multiple degrees of knowledge, such as habitat requirements or elevational limits of the species, in essence using an informal distribution modelling approach. 
+
+Richness maps derived from expert-drawn range maps may overestimate local richness ('error of commission'), in relation to point-to-grid richness maps. This because they are generally drawn to include all areas where a species is known to occur without excluding areas in between where the species may not exist. They tend to map the 'extent of occurrence' of species that includes the, perhaps much smaller, ‘area of occupancy’ (Loislle et al., 2003; Habib et al., 2004; Hurlbert & White, 2005; Graham & Hijmans, 2006). 
+
+```{r Plotting IUCN distributions, echo=TRUE, warning=FALSE}
+#Loading Species map file
+species_data<-readShapePoly("D:/EAGLE/MB2/SDM/SDM_MB2/data/shapefiles/NT_TERRESTRIAL_MAMMALS_subset.shp",proj4string = proj.coord)
+plot(species_data)
+```
+
+*Creates presence-absence matrix of all species within the study area grid using* `lets.presab.grid` *from the* `letsR` *package.*
+
+```{r presence-absence matrix creation, echo = TRUE}
+proj.coord=CRS("+proj=longlat +ellps=WGS84 + datum=WGS84") #geographical, datum
+proj4string(SA_grid)<-proj.coord  #projecting the grid data
+proj4string(species_data)<-proj.coord
+
+pres_abs.matrix<-lets.presab.grid(shapes = species_data,
+                                  grid=SA_grid,
+                                  sample.unit = "ID",
+                                  remove.sp = TRUE,
+                                  presence = NULL,
+                                  origin=NULL,
+                                  seasonal = NULL)
+
+#Exporting the presence absence matrix
+write.table(pres_abs.matrix$PAM,"D:/EAGLE/MB2/SDM/SDM_MB2/data/matrices/Presence_absence_matrix.txt")
+
 ```
