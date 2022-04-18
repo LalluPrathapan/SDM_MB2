@@ -220,3 +220,70 @@ colors<- c("white",colfunc(max(rich_plus)))
 plot(pres_abs.matrix$grid,border="gray40",col=colors[rich_plus])
 map(add=TRUE)
 ```
+#Extracting the Coordinates of cell centeroids for further data analysis
+```{r Extracting cell centroids coordinates, echo=TRUE}
+resp_coord_var<-as.data.frame(coordinates(pres_abs.matrix$grid))
+colnames(resp_coord_var)<-c("Longitude X", "Latitude Y")
+
+#Export to file
+write.table(resp_coord_var,"D:/EAGLE/MB2/SDM/SDM_MB2/data/matrices/coordinates_centeroids.txt")
+```
+
+#Data cleaning
+```{r data cleaning, echo=TRUE}
+#Species data
+species<-read.table("D:/EAGLE/MB2/SDM/SDM_MB2/data/matrices/Presence_absence_matrix.txt",header=TRUE)
+head(species)
+colSums(species)
+
+#removing the columns having less than 4 presence
+rem_col<-colnames(species)[colSums(species)<=4]
+`%ni%`<-Negate(`%in%`)
+species<-subset(species,select=names(species) %ni% rem_col)
+
+#change the separter between species name using 'gsub'function
+#Replace "." per "."
+names(species)<-gsub(x=names(species),pattern="\\.",replacement = ".")
+write.table(species,"D:/EAGLE/MB2/SDM/SDM_MB2/data/matrices/Presence_absence_matrix_cleaned.txt")
+
+```
+
+#Species distribution modelling
+
+*Arranging the input data for usage of the function `BIOMOD_FormatingData()` 
+
+```{r format data, echo=TRUE}
+#Load species data
+resp_var_data<-read.table("D:/EAGLE/MB2/SDM/SDM_MB2/data/matrices/Presence_absence_matrix_cleaned.txt",header=TRUE)
+#Load environmental variables
+expl_var_data<-read.table("D:/EAGLE/MB2/SDM/SDM_MB2/data/matrices/Environ_var_exracted.txt")
+#Define species of Interest-selecting Panthera.onca
+species_name<-names(resp_var_data)[1]
+species_name
+#Loading coordinates
+resp_coord_var<-read.table("D:/EAGLE/MB2/SDM/SDM_MB2/data/matrices/coordinates_centeroids.txt")
+```
+
+```{r BIOMOD_FormatingData,echo=TRUE}
+modelling_data<-BIOMOD_FormatingData(resp.var =as.data.frame(resp_var_data[,species_name]),
+                                     expl.var =expl_var_data,
+                                     resp.xy = as.data.frame(resp_coord_var),
+                                     resp.name = species_name,
+                                     #PA.nb.rep = 2,
+                                     #PA.nb.absences = 200,
+                                     #PA.strategy = 'random',
+                                     na.rm=TRUE)
+modelling_data
+```
+#Plot the data
+```{r plot BIOMOD_FormatingData,echo=TRUE}
+plot(modelling_data)
+legend(x="bottomleft",
+       legend=c("absent","present"),
+       fill=2:3,
+             cex=1,
+       title=NULL)
+
+```
+
+
