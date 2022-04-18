@@ -1,0 +1,54 @@
+, , GBM, RUN1, AllData
+
+    Testing.data Cutoff Sensitivity Specificity
+TSS        0.750    337         100          75
+ROC        0.883    335         100          75
+
+, , GLM, RUN1, AllData
+
+    Testing.data Cutoff Sensitivity Specificity
+TSS        0.750    495         100          75
+ROC        0.875    500         100          75
+
+, , RF, RUN1, AllData
+
+    Testing.data Cutoff Sensitivity Specificity
+TSS        0.750    505         100          75
+ROC        0.917    504         100          75
+
+, , GBM, RUN2, AllData
+
+    Testing.data Cutoff Sensitivity Specificity
+TSS        0.750  801.5         100          75
+ROC        0.917  800.5         100          75
+
+, , GLM, RUN2, AllData
+
+    Testing.data Cutoff Sensitivity Specificity
+TSS         0.50    495         100          50
+ROC         0.75    500         100          50
+
+, , RF, RUN2, AllData
+
+    Testing.data Cutoff Sensitivity Specificity
+TSS         0.75    610         100          75
+ROC         0.90    611         100          75
+
+, , GBM, RUN3, AllData
+
+    Testing.data Cutoff Sensitivity Specificity
+TSS        0.867  483.5      86.667         100
+ROC        0.883  483.5      86.667         100
+
+, , GLM, RUN3, AllData
+
+    Testing.data Cutoff Sensitivity Specificity
+TSS          0.8    495          80         100
+ROC          0.9    500          80         100
+
+, , RF, RUN3, AllData
+
+    Testing.data Cutoff Sensitivity Specificity
+TSS        0.933    375      93.333         100
+ROC        0.950    374      93.333         100
+

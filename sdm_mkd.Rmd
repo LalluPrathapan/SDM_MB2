@@ -342,3 +342,163 @@ write.table(model_evalution,file="D:/EAGLE/MB2/SDM/SDM_MB2/data/results/panthera
 
 #Plotting evaluation scores-Sensitivity and Specificity
 
+#TSS and ROC score for sensitivity
+```{r Sensitivity, echo=TRUE,eval=FALSE}
+model_sensitivity<-model_evalution[,"Sensitivity",,,]
+model_sensitivity
+
+all_model_sens<-as.data.frame(t(as.data.frame(model_sensitivity)))
+
+sens.hist.TSS<-ggplot(all_model_sens,aes(x=TSS))+geom_histogram(aes(y=..density..),color="black",fill='grey',
+                      binwidth = density(all_model_sens$TSS)$bw)+geom_density(fill='red',alpha=0.2)
+                     
+
+sens.hist.ROC<-ggplot(all_model_sens,aes(x= ROC))+geom_histogram(aes(y=..density..),color="black",fill='grey',
+                                                                binwidth = density(all_model_sens$ROC)$bw)+geom_density(fill='red',alpha=0.2)
+sens.hist.TSS
+sens.hist.ROC
+
+write.table(model_sensitivity,file="D:/EAGLE/MB2/SDM/SDM_MB2/data/results/sensitivity_score_3models")
+
+```
+#TSS and ROC score for Specificity
+
+#SPECIFICITY OF ALL MODELS-TSS AND ROC SCORE FOR SPECIFICITY
+
+
+```{r}
+#SPECIFICITY OF ALL MODELS-TSS AND ROC SCORE FOR SPECIFICITY
+model_specificity<-model_evalution[,"Specificity",,,]
+model_specificity
+hist(model_specificity)
+
+write.table(model_specificity,file = "D:/EAGLE/MB2/SDM/SDM_MB2/data/results/specificity_score_3models")
+```
+#PRESENCES proportion correctly predicted (true positive)
+```{r true positive,}
+sensitivity<-read.table("D:/EAGLE/MB2/SDM/SDM_MB2/data/results/sensitivity_score_3models")
+summary(sensitivity)
+str(sensitivity)
+sensitivity #table of sensitivity by TSS or ROC run per model
+```
+# plotting box plot for diff algorithm
+#TSS score
+```{r sensitivity_TSS_plot, echo=TRUE}
+TSS.sens<-sensitivity[1,]
+trans.sens<-t(TSS.sens)#Matrix transposing for getting table
+modelName<-rownames(trans.sens)
+model1<-substr(modelName,1,3)
+sens_plot.1<-data.frame(trans.sens,model1)
+```
+
+```{r sensitivity_ROC_plot, echo=TRUE}
+#ROC score
+ROC.sens<-sensitivity[2,]
+trans.sens<-t(ROC.sens)#Matrix transposing for getting table
+modelName<-rownames(trans.sens)
+model2<-substr(modelName,1,3)
+sens_plot.2<-data.frame(trans.sens,model2)
+```
+
+```{r}
+sens_plot_data<-cbind(sens_plot.1,sens_plot.2)
+```
+
+#Box plot of sensitivity score for ROC and TSS
+```{r  sensitivity box plot ,echo=TRUE}
+TSS.sens.bplot<-ggplot(sens_plot_data,aes(x=model1,y=TSS,fill=model1))+
+                geom_boxplot()+
+                guides(fill=FALSE)+
+                ggtitle("Sensitivity using TSS scores")+
+                theme(plot.subtitle = element_text(vjust = 1), 
+                plot.caption = element_text(vjust = 1), 
+                panel.background = element_rect(fill = NA)) +
+                labs(x = "Model Type", y = "TSS (%)") 
+TSS.sens.bplot<-ggplotly(TSS.sens.bplot)
+
+ROC.sens.bplot<-ggplot(sens_plot_data,aes(x=model2,y=ROC,fill=model2))+
+                geom_boxplot()+
+                guides(fill=FALSE)+
+                ggtitle("Sensitivity using ROC scores")+
+                theme(plot.subtitle = element_text(vjust = 1), 
+                plot.caption = element_text(vjust = 1), 
+                panel.background = element_rect(fill = NA)) +
+                labs(x = "Model Type", y = "ROC (%)") 
+ROC.sens.bplot<-ggplotly(ROC.sens.bplot)
+
+TSS.sens.bplot
+ROC.sens.bplot
+```
+#ABSENCE proportion correctly predicted (true negative)
+
+```{r true negative, echo=TRUE}
+specificity<-read.table("D:/EAGLE/MB2/SDM/SDM_MB2/data/results/specificity_score_3models")
+summary(specificity)
+str(specificity)
+specificity#table of specificity by TSS or ROC run per model
+```
+# plotting box plot for diff algorithm
+#TSS score
+```{r specificity_TSS_plot, echo=TRUE}
+TSS.speci<-specificity[1,]
+trans.speci<-t(TSS.speci)#Matrix transposing for getting table
+modelName<-rownames(trans.speci)
+model1<-substr(modelName,1,3)
+speci_plot.1<-data.frame(trans.speci,model1)
+```
+
+```{r specificity_ROC_plot, echo=TRUE}
+#ROC scor
+ROC.speci<-specificity[2,]
+trans.speci<-t(ROC.speci)#Matrix transposing for getting table
+modelName<-rownames(trans.speci)
+model2<-substr(modelName,1,3)
+speci_plot.2<-data.frame(trans.speci,model2)
+```
+
+```{r}
+speci_plot_data<-cbind(speci_plot.1,speci_plot.2)
+```
+
+#Box plot of sensitivity score for ROC and TSS
+```{r  specificity box plot ,echo=TRUE}
+TSS.speci.bplot<-ggplot(speci_plot_data,aes(x=model1,y=TSS,fill=model1))+
+  geom_boxplot()+
+  guides(fill=FALSE)+
+  ggtitle("Specivicity using TSS scores")+
+  theme(plot.subtitle = element_text(vjust = 1), 
+        plot.caption = element_text(vjust = 1), 
+        panel.background = element_rect(fill = NA)) +
+  labs(x = "Model Type", y = "TSS (%)") 
+TSS.speci.bplot<-ggplotly(TSS.speci.bplot)
+
+ROC.speci.bplot<-ggplot(speci_plot_data,aes(x=model2,y=ROC,fill=model2))+
+  geom_boxplot()+
+  guides(fill=FALSE)+
+  ggtitle("Specivicity using ROC scores")+
+  theme(plot.subtitle = element_text(vjust = 1), 
+        plot.caption = element_text(vjust = 1), 
+        panel.background = element_rect(fill = NA)) +
+  labs(x = "Model Type", y = "ROC (%)") 
+ROC.speci.bplot<-ggplotly(ROC.speci.bplot)
+
+TSS.speci.bplot
+ROC.speci.bplot
+```
+
+#Plotting variable importance and saving it
+```{r variable importance,echo=TRUE}
+get_variables_importance(model_output)
+#saving the variables importance and model evaluation
+capture.output(get_evaluations(model_output),file = file.path(species_name,paste(species_name,"model evaluation.txt",sep="")))
+capture.output(get_variables_importance(model_output),file = file.path(species_name,paste(species_name,"model_variable_importance.txt",sep="")))
+```
+#Plotting the response curves
+
+
+
+
+
+
+
+
