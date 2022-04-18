@@ -46,6 +46,73 @@ library(tidyr)
 
 #* This project is build,evaluate and project species distribution model for Panthera species in South American region(Neotropical zoogeographical region ) as the study area.
 
-*Load study area*
-SouthAmerica_shape <- rgdal::readOGR("D:/EAGLE/MB2/SDM_tutorial_v3/data/shapefiles/neotropical.shp")
+#*Step1-Data preparation
+
+*Load study area and creating spatial grids for study area*
+```{r Loading study area shapefile, echo = TRUE}
+SouthAmerica_shape <- rgdal::readOGR("D:/EAGLE/MB2/SDM/SDM_MB2/data/shapefiles/neotropical.shp")
 plot(SouthAmerica_shape)
+```
+#Defines a function for creating study area grid with resolution and proportion of overlap for each cell of the grid
+```{r GridFilter function, echo = TRUE}
+grid_filter <- function(shape, resol = 1, prop = 0){
+  grid <- raster(extent(shape))
+  res(grid) <- resol
+  proj4string(grid) <- proj4string(shape)
+  polygon_grid <- rasterToPolygons(grid)
+  proj_dryland <- spTransform(shape, CRS("+proj=laea"))
+  proj_grid_poly <- spTransform(polygon_grid, CRS("+proj=laea"))
+  proj_grid_poly$layer <- c(1:length(proj_grid_poly$layer))
+  area_grid <- gArea(proj_grid_poly, byid=T)
+  proj_grid_poly <- gBuffer(proj_grid_poly, byid=TRUE, width=0)
+  land.grid <- intersect( proj_dryland, proj_grid_poly)
+  land.grid_area <- gArea(land.grid, byid=T)
+  info <- cbind(land.grid$layer, area_grid[land.grid$layer],     land.grid_area)
+  land.grid$layer <- info[,3]/info[,2]
+  land.grid <- spTransform(land.grid, CRS(proj4string(shape)))
+  land.grid.filtered <- land.grid[land.grid$layer >= prop,]
+}
+```
+
+# A spatial polygon gird of resolution 5degreex5degree is created
+```{r polygond grid,echo=FALSE}
+SA_grid <- grid_filter(SouthAmerica_shape, resol = 5, prop = 0.5)
+#ID column is added for future use
+SA_grid$ID <- 1:(length(SA_grid))
+#Exporting the grid to a file
+writeOGR(SA_grid, dsn=paste("D:/EAGLE/MB2/SDM/SDM_MB2/data/shapefiles", sep=""), layer="South_America_grid", driver="ESRI Shapefile", overwrite_layer=T)
+```
+
+#Plotting resulting polygon-each cell is a site(a row) in the data
+```{r Loading and plotting your polygon grid, echo=TRUE, warning=FALSE}
+SA_grid <-  readOGR("D:/EAGLE/MB2/SDM/SDM_MB2/data/shapefiles/South_America_grid.shp")
+plot(SA_grid)
+```
+##Step2- Environmental data
+
+`The predictor variables for SDM are extracted from the raster file of environmental variables like climate, soil, terrain, landuse etc. Here the climate variable is taken into consideration `
+
+*Importing environmental data*
+
+```{r Improting bioclimatic variables locally, echo = TRUE}
+#Using locally downloaded data as predictor variable
+clim_rasters<- list.files("D:/EAGLE/MB2/SDM/SDM_MB2/data/rasters/bio_10m_bil", pattern = "bil$", full.names = TRUE)
+clim_rasters
+
+#Stacking the Climate variables
+clim_rasters<-stack(clim_rasters)
+clim_rasters
+
+#Plotting the climate variables
+plot(clim_rasters/10) #Worlclim data is multiplied by 10.
+```
+
+```{r Bio climate table definition, tidy=FALSE, echo = FALSE}
+kable(
+  data.frame(
+    var= c("BIO1","BIO2","BIO3","BIO4","BIO5","BIO6","BIO7","BIO8","BIO9","BIO10","BIO11","BIO12","BIO13","BIO14","BIO15","BIO16","BIO17","BIO18","BIO19"),
+    Definition = c(" Annual Mean Temperature","Mean Diurnal Range (Mean of monthly (max temp - min temp))","Isothermality (BIO2/BIO7) (×100)","Temperature Seasonality (standard deviation ×100)","Max Temperature of Warmest Month","Min Temperature of Coldest Month","Temperature Annual Range (BIO5-BIO6)","Mean Temperature of Wettest Quarter","Mean Temperature of Driest Quarter","Mean Temperature of Warmest Quarter"," Mean Temperature of Coldest Quarter","Annual Precipitation","Precipitation of Wettest Month","Precipitation of Driest Month"," Precipitation Seasonality (Coefficient of Variation)","Precipitation of Wettest Quarter"," Precipitation of Driest Quarter","Precipitation of Warmest Quarter","Precipitation of Coldest Quarter")
+            ),
+  caption = "Bioclimatic variables are derived from the monthly temperature and rainfall values in order to generate more biologically meaningful variables. These are often used in species distribution modeling and related ecological modeling techniques. The bioclimatic variables represent annual trends (e.g., mean annual temperature, annual precipitation) seasonality (e.g., annual range in temperature and precipitation) and extreme or limiting environmental factors (e.g., temperature of the coldest and warmest month, and precipitation of the wet and dry quarters). A quarter is a period of three months (1/4 of the year)."#, booktabs = TRUE
+)
+```
