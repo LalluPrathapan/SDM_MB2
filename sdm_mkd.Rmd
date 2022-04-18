@@ -327,6 +327,18 @@ modeling.id = paste(species_name,"Climate",sep = ""))
 ##Extracting evaluation scores
 #Receiving Operator Curve(ROC) and True Skill Statistic(TSS) evaluations are used 
 ```{r model evaluation, echo=TRUE}
+#get all model evaluation
+model_evalution<-get_evaluations(model_output)#evaluation scores 
+model_evalution
+
+#print the dimnames of the object
+dimnames(model_evalution)
+#histogram of model evalution
+x11()
+hist(model_evalution)
+write.table(model_evalution,file="D:/EAGLE/MB2/SDM/SDM_MB2/data/results/panthera_model_evaluation")
 
 ```
+
+#Plotting evaluation scores-Sensitivity and Specificity
 
