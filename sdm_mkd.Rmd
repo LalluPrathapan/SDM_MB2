@@ -210,3 +210,13 @@ pres_abs.matrix<-lets.presab.grid(shapes = species_data,
 write.table(pres_abs.matrix$PAM,"D:/EAGLE/MB2/SDM/SDM_MB2/data/matrices/Presence_absence_matrix.txt")
 
 ```
+
+*Plot the species richness within the study grid
+
+```{r Richness map, echo = TRUE}
+rich_plus<-rowSums(pres_abs.matrix$PAM)+1
+colfunc<-colorRampPalette(c("#fff5f0", "#fb6a4a", "#67000d"))
+colors<- c("white",colfunc(max(rich_plus)))
+plot(pres_abs.matrix$grid,border="gray40",col=colors[rich_plus])
+map(add=TRUE)
+```
