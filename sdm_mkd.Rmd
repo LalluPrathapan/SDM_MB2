@@ -493,9 +493,94 @@ get_variables_importance(model_output)
 capture.output(get_evaluations(model_output),file = file.path(species_name,paste(species_name,"model evaluation.txt",sep="")))
 capture.output(get_variables_importance(model_output),file = file.path(species_name,paste(species_name,"model_variable_importance.txt",sep="")))
 ```
-#Plotting the response curves
+#Plotting the response curves for one run
+```{r 2D response curve GLM GBM RF}
+#GLM
+GLM<-BIOMOD_LoadModels(model_output,models=c("GLM"))
+#2D response curve
+Resplot2D_GLM <- response.plot2(models  = GLM,
+                               Data = get_formal_data(model_output,'expl.var'), 
+                               show.variables= get_formal_data(model_output,'expl.var.names'),
+                               do.bivariate = FALSE,
+                               fixed.var.metric = 'median',
+                               col = c("blue", "red"),
+                               legend = TRUE,
+                               data_species = get_formal_data(model_output,'resp.var'))
+#GAM
+GBM<-BIOMOD_LoadModels(model_output,models=c("GBM"))
+#2D response curve
+Resplot2D_GBM <- response.plot2(models  = GBM,
+                            Data = get_formal_data(model_output,'expl.var'), 
+                            show.variables= get_formal_data(model_output,'expl.var.names'),
+                            do.bivariate = FALSE,
+                            fixed.var.metric = 'median',
+                            col = c("blue", "red"),
+                            legend = TRUE,
+                            data_species = get_formal_data(model_output,'resp.var'))
+#RF
+RF<-BIOMOD_LoadModels(model_output,models=c("RF"))
+#2D response curve
+Resplot2D_RF <- response.plot2(models  = RF,
+                                Data = get_formal_data(model_output,'expl.var'), 
+                                show.variables= get_formal_data(model_output,'expl.var.names'),
+                                do.bivariate = FALSE,
+                                fixed.var.metric = 'median',
+                                col = c("blue", "red"),
+                                legend = TRUE,
+                                data_species = get_formal_data(model_output,'resp.var'))
+```
+#3D RESPONSE PLOT for one model run
+```{r  2D response curve GLM GBM RF}
+#GLM
+x11()
+Resplot3D_GLM <- response.plot2(models  = GLM[1],
+                               Data = get_formal_data(model_output,'expl.var'), 
+                               show.variables= get_formal_data(model_output,'expl.var.names'),
+                               do.bivariate = TRUE,
+                               fixed.var.metric = 'median',
+                               data_species = get_formal_data(model_output,'resp.var'),
+                               display_title=FALSE)
+#GBM
+X11()
+Resplot3D_GBM <- response.plot2(models  = GBM[1],
+                                Data = get_formal_data(model_output,'expl.var'), 
+                                show.variables= get_formal_data(model_output,'expl.var.names'),
+                                do.bivariate = TRUE,
+                                fixed.var.metric = 'median',
+                                data_species = get_formal_data(model_output,'resp.var'),
+                                display_title=FALSE)
+#RF
+X11()
+Resplot3D_RF <- response.plot2(models  = RF[1],
+                                Data = get_formal_data(model_output,'expl.var'), 
+                                show.variables= get_formal_data(model_output,'expl.var.names'),
+                                do.bivariate = TRUE,
+                                fixed.var.metric = 'median',
+                                data_species = get_formal_data(model_output,'resp.var'),
+                                display_title=FALSE)
 
+```
 
+#PLOTTING PREDICTIONS
+#Make projections on the current variable
+
+```{r Plotting predictions, echo=TRUE}
+biomodproj <- BIOMOD_Projection(
+  modeling.output = model_output,
+  new.env = expl_var_data,
+  xy.new.env = resp_coord_var,
+  proj.name = 'current',
+  selected.models = 'all',
+  binary.meth = 'ROC',
+  compress = TRUE,
+  clamping.mask = F,
+  output.format = '.RData')
+
+# Plot predictions
+plot(biomodproj)
+SDM_project <- get_predictions(biomodproj)
+SDM_project
+```
 
 
 
