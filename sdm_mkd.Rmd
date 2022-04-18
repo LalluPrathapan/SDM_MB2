@@ -2,9 +2,10 @@
 title: "SDM"
 author: "Lallu Nikerthil Prathapan"
 date: "4/18/2022"
+email:"lalsdestiny@gmail.com"
 output: html_document
 ---
-#This project is build,evaluate and project species distribution model for Panthera species in South American region(Neotropical zoogeographical region ) as the study area.
+#This project is build,evaluate and project species distribution model in South American region(Neotropical zoogeographical region ) as the study area.
 
 ```{r knitr_init, echo=FALSE, cache=FALSE}
 library(knitr)
@@ -291,8 +292,6 @@ legend(x="bottomleft",
 ```{r BIOMOD_ModelingOptions,echo=TRUE}
 modelling_option<-BIOMOD_ModelingOptions()
 ```
-
-modelling_option<-BIOMOD_ModelingOptions()
 
 ##Computing models
 #Here a set of models will be run for the panthera species. Selected algorithms are 'GLM','GBM','RF'
