@@ -286,4 +286,47 @@ legend(x="bottomleft",
 
 ```
 
+#run models
+#Setting default parameters for the modelling techniques using function BIOMOD_ModelingOptions()
+```{r BIOMOD_ModelingOptions,echo=TRUE}
+modelling_option<-BIOMOD_ModelingOptions()
+```
+
+modelling_option<-BIOMOD_ModelingOptions()
+
+##Computing models
+#Here a set of models will be run for the panthera species. Selected algorithms are 'GLM','GBM','RF'
+## As there is no evaluation data 3 fold cross validation is done  by randomly splitting the data set to 2 subsets
+```{r Biomodeloutput,echo=TRUE}
+model_output<-BIOMOD_Modeling(
+#BIOMOD_FormatingData()-class object
+data = modelling_data,
+#Model sets to be calibrated on data
+models=c('GBM','GLM','RF'),
+#Number of evaluation to run
+NbRunEval = 3,
+#70% data will be run and rest is used for testing
+DataSplit = 70,
+#Prevelance when kept null, presence-absence have same weight
+Prevalence = 0.5,
+#Number of permutations to estimate variable importance
+VarImport = 5,
+#Evaluation methods
+models.eval.meth = c('TSS','ROC'),
+#save results on harddrive
+SaveObj = TRUE,
+#when the afrgument TRUE, model prediction have binomial scale
+rescal.all.models = FALSE,
+#when the argument TRUE, model is calibrated and evaluated with whole dataset
+do.full.models = FALSE,
+#An Id for modelling procedure
+modeling.id = paste(species_name,"Climate",sep = ""))
+
+```
+##Model Evaluation
+##Extracting evaluation scores
+#Receiving Operator Curve(ROC) and True Skill Statistic(TSS) evaluations are used 
+```{r model evaluation, echo=TRUE}
+
+```
 
