@@ -4,6 +4,7 @@ author: "Lallu Nikerthil Prathapan"
 date: "4/18/2022"
 output: html_document
 ---
+#This project is build,evaluate and project species distribution model for Panthera species in South American region(Neotropical zoogeographical region ) as the study area.
 
 ```{r knitr_init, echo=FALSE, cache=FALSE}
 library(knitr)
@@ -43,9 +44,6 @@ library(plotly)
 library(xtable)
 library(tidyr)
 ```
-
-#* This project is build,evaluate and project species distribution model for Panthera species in South American region(Neotropical zoogeographical region ) as the study area.
-
 #*Step1-Data preparation
 
 *Load study area and creating spatial grids for study area*
@@ -88,7 +86,7 @@ writeOGR(SA_grid, dsn=paste("D:/EAGLE/MB2/SDM/SDM_MB2/data/shapefiles", sep=""),
 SA_grid <-  readOGR("D:/EAGLE/MB2/SDM/SDM_MB2/data/shapefiles/South_America_grid.shp")
 plot(SA_grid)
 ```
-##Step2- Environmental data
+##Step2- Environmental data and extraction of predictor variable
 
 `The predictor variables for SDM are extracted from the raster file of environmental variables like climate, soil, terrain, landuse etc. Here the climate variable is taken into consideration `
 
