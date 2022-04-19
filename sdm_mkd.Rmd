@@ -7,6 +7,15 @@ output: html_document
 ---
 #This project is build,evaluate and project species distribution model in South American region(Neotropical zoogeographical region ) as the study area.
 
+## The step involved in the process are below
+###1.Data preparation
+#     +Study area preparation
+#     +Environmental data import
+#     +Predictor variable extraction
+#     +Presence and absence data
+#     +Presence-only and pseudo-absences data
+###2.Model fitting,prediction and evaluation
+###3.Projecting models
 ```{r knitr_init, echo=FALSE, cache=FALSE}
 library(knitr)
 install.packages("rmdformats")
