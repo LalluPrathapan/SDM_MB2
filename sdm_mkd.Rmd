@@ -131,8 +131,9 @@ proj.coord <- CRS("+proj=longlat +ellps=WGS84 + datum=WGS84")  # geographical, d
 SA_grid <- spTransform(SA_grid, proj.coord)  # projectind the study area grid
 proj4string(clim_rasters) <- SA_grid  # and of climatic rasters
 ```
-
-#Here for the species panthera onca(jaguar) the  bioclimate variable 1,2,3,4,8,12,15,18 are considered as the predictor variables
+#The jaguar (Panthera onca), the largest cat of the Americas, has a broad distribution throughout Central and South America (Nowell k Jackosn,1996). It is considered a focal species since its survival requirements encompass multiple factors that are essential for maintaining an ecologically healthy environment (Miller B et al.,2002)
+##Here for the species panthera onca(jaguar) the  bioclimate variable 1,2,3,4,8,12,15,18 are considered ()
+.
 *Extraction of predictor variable for each cell of the grid*
 ```{r Variable extraction 1, echo = TRUE}
 expl_var<-data.frame(bio_1=numeric(length(SA_grid)),bio_2=numeric(length(SA_grid)),bio_3=numeric(length(SA_grid)),
@@ -190,8 +191,6 @@ head(expl_var)
 ### Using expert drawn maps
 
 Here the species distribution information is acquired from the IUCN Red List for Threatened Species database. These expert drawn maps acquired by multiple method:only on occurence data(e.g. polygon around known occurence)
-
-One way of acquiring species distribution information is from expert-drawn maps, such as the ones from the IUCN Red List for Threatened Species database. These maps Tare usually done used multiple methods: only on occurrence data (e.g. a polygon around known occurrences), whereas others incorporate multiple degrees of knowledge, such as habitat requirements or elevational limits of the species, in essence using an informal distribution modelling approach. 
 
 Richness maps derived from expert-drawn range maps may overestimate local richness ('error of commission'), in relation to point-to-grid richness maps. This because they are generally drawn to include all areas where a species is known to occur without excluding areas in between where the species may not exist. They tend to map the 'extent of occurrence' of species that includes the, perhaps much smaller, ‘area of occupancy’ (Loislle et al., 2003; Habib et al., 2004; Hurlbert & White, 2005; Graham & Hijmans, 2006). 
 
@@ -287,6 +286,7 @@ modelling_data
 ```
 #Plot the data
 ```{r plot BIOMOD_FormatingData,echo=TRUE}
+x11()
 plot(modelling_data)
 legend(x="bottomleft",
        legend=c("absent","present"),
