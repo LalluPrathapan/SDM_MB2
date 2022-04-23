@@ -12,7 +12,7 @@ Operating system: "Windows 10"
 
 *The data is in the git hub repository under data as rasters and shapefile which are needed for the area description and climate data*
 
-#This project is build,evaluate and project species distribution model of a single species (panthera onca) in Neotropical zoogeographical region. (Torres et al.,2012)
+#This project is to build,evaluate and project species distribution model of a single species (panthera onca) in Neotropical zoogeographical region. (Torres et al.,2012).The project is introductory phase of learning SDM.
 
 ## The step involved in the process are below
 ###1.Data preparation
@@ -580,6 +580,11 @@ Resplot3D_RF <- response.plot2(models  = RF[1],
                                 display_title=FALSE)
 
 ```
+## The response functions are showing high values for all bioclim variables.
+
+
+
+
 
 #PLOTTING PREDICTIONS
 #Make projections on the current variable
@@ -603,10 +608,15 @@ plot(biomodproj)
 SDM_project <- get_predictions(biomodproj)
 SDM_project
 ```
+###TSS indicates that RF is the method with best performance, regardless the way threshold was established. 
+## Change in biovariable as well as different algorithms also have to be repeated to achieve better model. Here the accuracy of the model is limited with the algorithm used. Maxtend and other methods also should be tested for the performance which can be done with the same code.
 
 
-  
+#Reference 
 
+#[1]. Can species distribution modelling provide estimates of population densities? A case study with jaguars in the Neotropics, Natalia M. Torres et.al, 2012
+#[2].Introduction to species distribution modelling (SDM) in R, Damarius Zurell, 2020-updated, https://damariszurell.github.io/SDM-Intro/
+#[3].
 
 
 
