@@ -2,10 +2,17 @@
 title: "SDM"
 author: "Lallu Nikerthil Prathapan"
 date: "4/18/2022"
-email:"lalsdestiny@gmail.com"
+email: "lalsdestiny@gmail.com"
+github url: "https://github.com/LalluPrathapan/SDM_MB2.git"
 output: html_document
+R version: "R-4.1.1"
+Operating system: "Windows 10"
 ---
-#This project is build,evaluate and project species distribution model in South American region(Neotropical zoogeographical region ) as the study area.
+ 
+
+*The data is in the git hub repository under data as rasters and shapefile which are needed for the area description and climate data*
+
+#This project is build,evaluate and project species distribution model of a single species (panthera onca) in Neotropical zoogeographical region. (Torres et al.,2012)
 
 ## The step involved in the process are below
 ###1.Data preparation
@@ -16,6 +23,8 @@ output: html_document
 #     +Presence-only and pseudo-absences data
 ###2.Model fitting,prediction and evaluation
 ###3.Projecting models
+
+*Initiating knitr *
 ```{r knitr_init, echo=FALSE, cache=FALSE}
 library(knitr)
 install.packages("rmdformats")
@@ -98,7 +107,9 @@ plot(SA_grid)
 ```
 ##Step2- Environmental data and extraction of predictor variable
 
-`The predictor variables for SDM are extracted from the raster file of environmental variables like climate, soil, terrain, landuse etc. Here the climate variable is taken into consideration `
+`The predictor variables for SDM are extracted from the raster file of environmental variables like climate, soil, terrain, landuse etc. Here the climate variable is taken into consideration. Here climate data from BIOCLIM is used as predictive data. `
+
+##BIOCLIM data is set of interpolated climate surface for global land areas at an orginal spatial resolution of a square kilometer(Hijmans et al.,2005)
 
 *Importing environmental data*
 
@@ -114,7 +125,7 @@ clim_rasters
 #Plotting the climate variables
 plot(clim_rasters/10) #Worlclim data is multiplied by 10.
 ```
-
+# Bioclimate variable definition
 ```{r Bio climate table definition, tidy=FALSE, echo = FALSE}
 kable(
   data.frame(
@@ -286,7 +297,6 @@ modelling_data
 ```
 #Plot the data
 ```{r plot BIOMOD_FormatingData,echo=TRUE}
-x11()
 plot(modelling_data)
 legend(x="bottomleft",
        legend=c("absent","present"),
@@ -502,10 +512,11 @@ capture.output(get_evaluations(model_output),file = file.path(species_name,paste
 capture.output(get_variables_importance(model_output),file = file.path(species_name,paste(species_name,"model_variable_importance.txt",sep="")))
 ```
 #Plotting the response curves for one run
-```{r 2D response curve GLM GBM RF}
+```{r 2D response curve GLM GBM RF,echo=TRUE}
 #GLM
 GLM<-BIOMOD_LoadModels(model_output,models=c("GLM"))
 #2D response curve
+
 Resplot2D_GLM <- response.plot2(models  = GLM,
                                Data = get_formal_data(model_output,'expl.var'), 
                                show.variables= get_formal_data(model_output,'expl.var.names'),
@@ -528,6 +539,7 @@ Resplot2D_GBM <- response.plot2(models  = GBM,
 #RF
 RF<-BIOMOD_LoadModels(model_output,models=c("RF"))
 #2D response curve
+
 Resplot2D_RF <- response.plot2(models  = RF,
                                 Data = get_formal_data(model_output,'expl.var'), 
                                 show.variables= get_formal_data(model_output,'expl.var.names'),
@@ -540,7 +552,7 @@ Resplot2D_RF <- response.plot2(models  = RF,
 #3D RESPONSE PLOT for one model run
 ```{r  2D response curve GLM GBM RF}
 #GLM
-x11()
+
 Resplot3D_GLM <- response.plot2(models  = GLM[1],
                                Data = get_formal_data(model_output,'expl.var'), 
                                show.variables= get_formal_data(model_output,'expl.var.names'),
@@ -549,7 +561,7 @@ Resplot3D_GLM <- response.plot2(models  = GLM[1],
                                data_species = get_formal_data(model_output,'resp.var'),
                                display_title=FALSE)
 #GBM
-X11()
+
 Resplot3D_GBM <- response.plot2(models  = GBM[1],
                                 Data = get_formal_data(model_output,'expl.var'), 
                                 show.variables= get_formal_data(model_output,'expl.var.names'),
@@ -586,9 +598,16 @@ biomodproj <- BIOMOD_Projection(
 
 # Plot predictions
 plot(biomodproj)
+
+
 SDM_project <- get_predictions(biomodproj)
 SDM_project
 ```
+
+
+  
+
+
 
 
 
