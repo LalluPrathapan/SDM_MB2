@@ -616,7 +616,7 @@ SDM_project
 
 #[1]. Can species distribution modelling provide estimates of population densities? A case study with jaguars in the Neotropics, Natalia M. Torres et.al, 2012
 #[2].Introduction to species distribution modelling (SDM) in R, Damarius Zurell, 2020-updated, https://damariszurell.github.io/SDM-Intro/
-#[3].
+
 
 
 
