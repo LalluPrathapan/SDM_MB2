@@ -552,6 +552,7 @@ Resplot2D_RF <- response.plot2(models  = RF,
 #3D RESPONSE PLOT for one model run
 ```{r  2D response curve GLM GBM RF}
 #GLM
+x11()
 
 Resplot3D_GLM <- response.plot2(models  = GLM[1],
                                Data = get_formal_data(model_output,'expl.var'), 
