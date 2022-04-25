@@ -27,7 +27,7 @@ Operating system: "Windows 10"
 *Initiating knitr *
 ```{r knitr_init, echo=FALSE, cache=FALSE}
 library(knitr)
-install.packages("rmdformats")
+#install.packages("rmdformats")
 library(rmdformats)
 ## Global options
 options(max.print="75")
@@ -70,29 +70,29 @@ library(tidyr)
 SouthAmerica_shape <- rgdal::readOGR("D:/EAGLE/MB2/SDM/SDM_MB2/data/shapefiles/neotropical.shp")
 plot(SouthAmerica_shape)
 ```
-#Defines a function for creating study area grid with resolution and proportion of overlap for each cell of the grid
+#Defines a function for creating study area grid with resolution and proportion of overlap for each cell of the grid. Function developed by José Hidasi-Neto to overlays a grid and (optionally) excludes pixels/grid cells that have less than a specific proportion of their area covered by the shape/polygon. 
 ```{r GridFilter function, echo = TRUE}
 grid_filter <- function(shape, resol = 1, prop = 0){
-  grid <- raster(extent(shape))
+  grid <- raster(extent(shape))#empty raster
   res(grid) <- resol
-  proj4string(grid) <- proj4string(shape)
-  polygon_grid <- rasterToPolygons(grid)
-  proj_dryland <- spTransform(shape, CRS("+proj=laea"))
+  proj4string(grid) <- proj4string(shape)# Make the grid have the same coordinate reference system (CRS) as the shapefile.
+  polygon_grid <- rasterToPolygons(grid)#transfer the raster to polygon
+  proj_dryland <- spTransform(shape, CRS("+proj=laea"))# Use an equal area projection  to be able to calculate area sizes
   proj_grid_poly <- spTransform(polygon_grid, CRS("+proj=laea"))
-  proj_grid_poly$layer <- c(1:length(proj_grid_poly$layer))
-  area_grid <- gArea(proj_grid_poly, byid=T)
+  proj_grid_poly$layer <- c(1:length(proj_grid_poly$layer))#Identify each cell in the grid
+  area_grid <- gArea(proj_grid_poly, byid=T)#Calculate area of each cell in the grid
   proj_grid_poly <- gBuffer(proj_grid_poly, byid=TRUE, width=0)
-  land.grid <- intersect( proj_dryland, proj_grid_poly)
-  land.grid_area <- gArea(land.grid, byid=T)
-  info <- cbind(land.grid$layer, area_grid[land.grid$layer],     land.grid_area)
-  land.grid$layer <- info[,3]/info[,2]
-  land.grid <- spTransform(land.grid, CRS(proj4string(shape)))
-  land.grid.filtered <- land.grid[land.grid$layer >= prop,]
+  land.grid <- intersect( proj_dryland, proj_grid_poly)## Intersect the grid with the shape. 
+  land.grid_area <- gArea(land.grid, byid=T)# Calculate the area of each cell in our intersected grid.
+  info <- cbind(land.grid$layer, area_grid[land.grid$layer],     land.grid_area) # Identify each cell, its area in the original grid, and its area in the intersected grid.
+  land.grid$layer <- info[,3]/info[,2]# Divide the area of each cell in the intersected grid by the area of the same cell in our original grid (i.e. before intersection). Then, save these proportions as the attribute "layer"
+  land.grid <- spTransform(land.grid, CRS(proj4string(shape)))# Make the gridded shape have WGS84 projection
+  land.grid.filtered <- land.grid[land.grid$layer >= prop,]# Keep grid cells that have at least a specific proportion of the area covered by the shape , here 0
 }
 ```
 
 # A spatial polygon gird of resolution 5degreex5degree is created
-```{r polygond grid,echo=FALSE}
+```{r polygon grid,echo=FALSE}
 SA_grid <- grid_filter(SouthAmerica_shape, resol = 5, prop = 0.5)
 #ID column is added for future use
 SA_grid$ID <- 1:(length(SA_grid))
@@ -113,7 +113,7 @@ plot(SA_grid)
 
 *Importing environmental data*
 
-```{r Improting bioclimatic variables locally, echo = TRUE}
+```{r Importing bioclimatic variables locally, echo = TRUE}
 #Using locally downloaded data as predictor variable
 clim_rasters<- list.files("D:/EAGLE/MB2/SDM/SDM_MB2/data/rasters/bio_10m_bil", pattern = "bil$", full.names = TRUE)
 clim_rasters
@@ -139,8 +139,8 @@ kable(
 *Converting the climate rasters and shapefile to same projection for extraction*
 ```{r Defining projections, echo = TRUE}
 proj.coord <- CRS("+proj=longlat +ellps=WGS84 + datum=WGS84")  # geographical, datum WGS84
-SA_grid <- spTransform(SA_grid, proj.coord)  # projectind the study area grid
-proj4string(clim_rasters) <- SA_grid  # and of climatic rasters
+SA_grid <- spTransform(SA_grid, proj.coord)  # projecting the study area grid
+proj4string(clim_rasters) <- SA_grid  # and of environmental variable rasters
 ```
 #The jaguar (Panthera onca), the largest cat of the Americas, has a broad distribution throughout Central and South America (Nowell k Jackosn,1996). It is considered a focal species since its survival requirements encompass multiple factors that are essential for maintaining an ecologically healthy environment (Miller B et al.,2002)
 ##Here for the species panthera onca(jaguar) the  bioclimate variable 1,2,3,4,8,12,15,18 are considered ()
