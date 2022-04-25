@@ -299,9 +299,9 @@ modelling_data
 ```{r plot BIOMOD_FormatingData,echo=TRUE}
 plot(modelling_data)
 legend(x="bottomleft",
-       legend=c("absent","present"),
+       legend=c("true absences","presence"),
        fill=2:3,
-             cex=1,
+             cex=0.5,
        title=NULL)
 
 ```
@@ -352,7 +352,6 @@ model_evalution
 #print the dimnames of the object
 dimnames(model_evalution)
 #histogram of model evalution
-x11()
 hist(model_evalution)
 write.table(model_evalution,file="D:/EAGLE/MB2/SDM/SDM_MB2/data/results/panthera_model_evaluation")
 
@@ -610,7 +609,7 @@ SDM_project <- get_predictions(biomodproj)
 SDM_project
 ```
 ###TSS indicates that RF is the method with best performance, regardless the way threshold was established. 
-## Change in biovariable as well as different algorithms also have to be repeated to achieve better model. Here the accuracy of the model is limited with the algorithm used. Maxtend and other methods also should be tested for the performance which can be done with the same code.
+## Change in biovariable as well as different algorithms also have to be repeated to achieve better model. Here the accuracy of the model is limited with the algorithm used. The specificity variable shows 100 which is seems to be an error. By repeating with different environmental variable and different algorithm this could be improved.
 
 
 #Reference 
